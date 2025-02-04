@@ -5,52 +5,117 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wishy Production</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <img src="https://via.placeholder.com/150" alt="Wishy Production">
+    <img src="./assets/logo.png" alt="Wishy Production" class="star-logo">
+    <div id="canvas-container"></div>
+    <button class="star-button" onclick="window.location.href='wonderland.html'">Start</button>
+
     <script>
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0xffffff);
-        
+
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.z = 7;
+        camera.position.set(0, 2, 8);
 
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight * 0.8);
-        document.body.appendChild(renderer.domElement);
+        document.getElementById("canvas-container").appendChild(renderer.domElement);
 
-        const shape = new THREE.Shape();
-        for (let i = 0; i < 10; i++) {
-            const angle = (i * Math.PI) / 5;
-            const radius = i % 2 === 0 ? 2 : 0.8;
-            const x = Math.cos(angle) * radius;
-            const y = Math.sin(angle) * radius;
-            if (i === 0) {
-                shape.moveTo(x, y);
-            } else {
-                shape.lineTo(x, y);
-            }
-        }
-        shape.closePath();
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.rotateSpeed = 0.3;
+        controls.enableZoom = false;
 
-        const extrudeSettings = { depth: 0.5, bevelEnabled: true, bevelThickness: 0.2, bevelSize: 0.2, bevelSegments: 10 };
-        const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-        const material = new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.8, roughness: 0.3 });
-        const star = new THREE.Mesh(geometry, material);
+        // Star 
+        const starGeometry = new THREE.SphereGeometry(2.5, 32, 32);
+        const starMaterial = new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.2, roughness: 0.8 });
+        const star = new THREE.Mesh(starGeometry, starMaterial);
         scene.add(star);
 
-        const light1 = new THREE.PointLight(0xffffff, 1, 100);
-        light1.position.set(1, 1, 17);
-        scene.add(light1);
+        // Eyes 
+        const eyeGeometry = new THREE.SphereGeometry(0.3, 16, 16);
+        const eyeMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
+        
+        const leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+        leftEye.position.set(-0.8, 1, 2.2);
+        
+        const rightEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+        rightEye.position.set(0.8, 1, 2.2);
 
-        const light2 = new THREE.AmbientLight(0x404040);
-        scene.add(light2);
+        // Create a curved smile using a TubeGeometry
+        const smileCurve = new THREE.CatmullRomCurve3([
+            new THREE.Vector3(-0.4, 0.3, 2.2),  // Left end of the smile
+            new THREE.Vector3(0, 0.1, 2.3),     // Curve dip in the middle
+            new THREE.Vector3(0.4, 0.3, 2.2)    // Right end of the smile
+        ]);
+
+        const smileGeometry = new THREE.TubeGeometry(smileCurve, 20, 0.05, 8, false);
+        const smileMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+        const smile = new THREE.Mesh(smileGeometry, smileMaterial);
+
+        star.add(leftEye, rightEye, smile);
+
+        // Dynamic lighting
+        const mainLight = new THREE.PointLight(0xffffff, 1.5, 100);
+        mainLight.position.set(5, 5, 5);
+        scene.add(mainLight);
+
+        const ambientLight = new THREE.AmbientLight(0xffffcc, 0.7);
+        scene.add(ambientLight);
+
+        // White highlights for plush effect
+        const highlightMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 0.5 });
+        const highlightGeometry = new THREE.SphereGeometry(0.3, 16, 16);
+        const highlight1 = new THREE.Mesh(highlightGeometry, highlightMaterial);
+        const highlight2 = new THREE.Mesh(highlightGeometry, highlightMaterial);
+        const highlight3 = new THREE.Mesh(highlightGeometry, highlightMaterial);
+        
+        highlight1.position.set(-0.8, 1.7, 0.5);
+        highlight2.position.set(0.8, 1.7, 0.5);
+        highlight3.position.set(0, 1.6, 0.8);
+        
+        scene.add(highlight1, highlight2, highlight3);
+
+        // Track mouse movement for dynamic lighting
+        document.addEventListener("mousemove", (event) => {
+            const x = (event.clientX / window.innerWidth) * 2 - 1;
+            const y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            mainLight.position.x = x * 10;
+            mainLight.position.y = y * 10;
+            mainLight.position.z = 5;
+        });
+
+        //Cones
+        const coneGeometry = new THREE.ConeGeometry(1.2, 2, 42);
+        const cones = [];
+
+        // Define proper cone positions (clock positions)
+        const conePositions = [
+            { pos: [0, 3, 0], rot: [0, 0, 0] },  // 12 o’clock (top)
+            { pos: [2.7, 0.45, 0], rot: [0, 0, -Math.PI / 2] }, // 3 o’clock (right)
+            { pos: [1.35, -2.7, 0], rot: [0, 0, -Math.PI / -0.85] }, // 5 o’clock (bottom-right)
+            { pos: [-1.35, -2.7, 0], rot: [0, 0, Math.PI / -0.85] }, // 7 o’clock (bottom-left)
+            { pos: [-2.7, 0.45, 0], rot: [0, 0, Math.PI / 2] }  // 9 o’clock (left)
+        ];
+
+        // Add cones to the star
+        conePositions.forEach(({ pos, rot }) => {
+            const cone = new THREE.Mesh(coneGeometry, starMaterial);
+            cone.position.set(...pos);
+            cone.rotation.set(...rot);
+            scene.add(cone);
+            cones.push(cone);
+        });
+
 
         function animate() {
             requestAnimationFrame(animate);
-            star.rotation.x += 0.027;
-            star.rotation.y += 0.027;
+            controls.update();
             renderer.render(scene, camera);
         }
         animate();
@@ -60,9 +125,6 @@
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
         });
-
-        
     </script>
-    <button onclick="window.location.href='wonderland.html'">Start</button>
 </body>
 </html>

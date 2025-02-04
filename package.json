@@ -1,0 +1,19 @@
+{
+  "name": "truculent-spoon-stuff-rihwp",
+  "productName": "truculent-spoon-stuff-rihwp",
+  "description": "My Electron application description",
+  "keywords": [],
+  "main": "./main.js",
+  "version": "1.0.0",
+  "author": "michowler",
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {
+    "assets": "3.0.1",
+    "image": "1.0.2"
+  },
+  "devDependencies": {
+    "electron": "33.3.0"
+  }
+}
