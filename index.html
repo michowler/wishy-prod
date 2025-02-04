@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wishy Production</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <img src="https://via.placeholder.com/150" alt="Wishy Production">
+    <script>
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xffffff);
+        
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 7;
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight * 0.8);
+        document.body.appendChild(renderer.domElement);
+
+        const shape = new THREE.Shape();
+        for (let i = 0; i < 10; i++) {
+            const angle = (i * Math.PI) / 5;
+            const radius = i % 2 === 0 ? 2 : 0.8;
+            const x = Math.cos(angle) * radius;
+            const y = Math.sin(angle) * radius;
+            if (i === 0) {
+                shape.moveTo(x, y);
+            } else {
+                shape.lineTo(x, y);
+            }
+        }
+        shape.closePath();
+
+        const extrudeSettings = { depth: 0.5, bevelEnabled: true, bevelThickness: 0.2, bevelSize: 0.2, bevelSegments: 10 };
+        const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        const material = new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.8, roughness: 0.3 });
+        const star = new THREE.Mesh(geometry, material);
+        scene.add(star);
+
+        const light1 = new THREE.PointLight(0xffffff, 1, 100);
+        light1.position.set(1, 1, 17);
+        scene.add(light1);
+
+        const light2 = new THREE.AmbientLight(0x404040);
+        scene.add(light2);
+
+        function animate() {
+            requestAnimationFrame(animate);
+            star.rotation.x += 0.027;
+            star.rotation.y += 0.027;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            renderer.setSize(window.innerWidth, window.innerHeight * 0.8);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        });
+
+        
+    </script>
+    <button onclick="window.location.href='wonderland.html'">Start</button>
+</body>
+</html>
