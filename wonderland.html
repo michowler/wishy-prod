@@ -62,7 +62,7 @@
 
         function createCloud(position) {
             const cloud = new THREE.Group();
-            const cloudMaterial = new THREE.MeshStandardMaterial({ color: 0xf0f0f0, transparent: true, opacity: 0.8 });
+            const cloudMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
             const mainSphere = new THREE.Mesh(new THREE.SphereGeometry(1.5, 16, 16), cloudMaterial);
             const sphere1 = new THREE.Mesh(new THREE.SphereGeometry(1.1, 16, 16), cloudMaterial);
             const sphere2 = new THREE.Mesh(new THREE.SphereGeometry(1.2, 16, 16), cloudMaterial);
