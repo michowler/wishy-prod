@@ -21,10 +21,10 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        const colors = [0xffd700, 0xff69b4, 0x87cefa, 0xadff2f, 0xffa07a];
+        const pastelColors = [0xffb3ba, 0xffdfba, 0xffffba, 0xbaffc9, 0xbae1ff, 0xe0bbff, 0xffbaff];
         const starPositions = [
             [-3, 4, -5], [1, 3, -4], [4, -2, -3], [-4, -3, -6], [2, -1, -5],
-            [-2, 1, -4], [3, -3, -5], [-1, -2, -6], [5, 2, -4], [-5, -1, -3]
+            [-2, 1, -4], [3, -3, -5]
         ];
         const stars = [];
 
@@ -49,19 +49,44 @@
             return shape;
         }
 
-        for (let i = 0; i < 7; i++) {
+        for (let i = 0; i < starPositions.length; i++) {
             const shape = createStarShape();
             const geometry = new THREE.ShapeGeometry(shape);
-            const material = new THREE.MeshStandardMaterial({ color: colors[i % colors.length], metalness: 0.5, roughness: 0.5 });
+            const material = new THREE.MeshStandardMaterial({ color: pastelColors[i % pastelColors.length], metalness: 0.5, roughness: 0.5 });
             const star = new THREE.Mesh(geometry, material);
             star.position.set(...starPositions[i]);
-            star.userData = { link: `star${i + 1}.html` };
+            star.userData = { link: `star${i + 1}.html`, originalY: star.position.y };
             scene.add(star);
             stars.push(star);
         }
 
-        const light = new THREE.PointLight(0xffffff, 1, 100);
-        light.position.set(5, 5, 5);
+        function createCloud(position) {
+            const cloud = new THREE.Group();
+            const cloudMaterial = new THREE.MeshStandardMaterial({ color: 0xf0f0f0, transparent: true, opacity: 0.8 });
+            const mainSphere = new THREE.Mesh(new THREE.SphereGeometry(1.5, 16, 16), cloudMaterial);
+            const sphere1 = new THREE.Mesh(new THREE.SphereGeometry(1.1, 16, 16), cloudMaterial);
+            const sphere2 = new THREE.Mesh(new THREE.SphereGeometry(1.2, 16, 16), cloudMaterial);
+            const sphere3 = new THREE.Mesh(new THREE.SphereGeometry(1.3, 16, 16), cloudMaterial);
+            
+            sphere1.position.set(-1.2, 0.5, 0);
+            sphere2.position.set(1.1, 0.3, 0);
+            sphere3.position.set(0.5, -0.8, 0);
+            
+            cloud.add(mainSphere, sphere1, sphere2, sphere3);
+            cloud.position.set(...position);
+            cloud.renderOrder = -1;
+            scene.add(cloud);
+            return cloud;
+        }
+
+        const cloudPositions = [
+            [-6, 3, -8], [5, 2, -7], [2, -3, -9], [-5, -2, -8], [4, 4, -7]
+        ];
+        const clouds = cloudPositions.map(pos => createCloud(pos));
+
+        stars.forEach(star => star.renderOrder = 1);
+
+        const light = new THREE.AmbientLight(0xffffff, 1);
         scene.add(light);
 
         renderer.domElement.addEventListener('click', (event) => {
@@ -77,13 +102,18 @@
             }
         });
 
+        let time = 0;
         function animate() {
             requestAnimationFrame(animate);
+            time += 0.02;
+
+            stars.forEach(star => {
+                star.position.y = star.userData.originalY + Math.sin(time + star.position.x) * 0.2;
+            });
+            
             renderer.render(scene, camera);
         }
         animate();
     </script>
-
-
 </body>
 </html>
