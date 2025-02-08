@@ -23,7 +23,7 @@
 
         const pastelColors = [0xffb3ba, 0xffdfba, 0xffffba, 0xbaffc9, 0xbae1ff, 0xe0bbff, 0xffbaff];
         const starPositions = [
-            [-3, 4, -5], [1, 3, -4], [4, -2, -3], [-4, -3, -6], [2, -1, -5],
+            [-4, 4, -5], [1, 3, -4], [5, -1, -3], [-4, -3, -6], [2, -1, -5],
             [-2, 1, -4], [3, -3, -5]
         ];
         const stars = [];
@@ -64,13 +64,13 @@
             const cloud = new THREE.Group();
             const cloudMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
             const mainSphere = new THREE.Mesh(new THREE.SphereGeometry(1.5, 16, 16), cloudMaterial);
-            const sphere1 = new THREE.Mesh(new THREE.SphereGeometry(1.1, 16, 16), cloudMaterial);
-            const sphere2 = new THREE.Mesh(new THREE.SphereGeometry(1.2, 16, 16), cloudMaterial);
+            const sphere1 = new THREE.Mesh(new THREE.SphereGeometry(1.2, 16, 16), cloudMaterial);
+            const sphere2 = new THREE.Mesh(new THREE.SphereGeometry(1.4, 16, 16), cloudMaterial);
             const sphere3 = new THREE.Mesh(new THREE.SphereGeometry(1.3, 16, 16), cloudMaterial);
             
-            sphere1.position.set(-1.2, 0.5, 0);
-            sphere2.position.set(1.1, 0.3, 0);
-            sphere3.position.set(0.5, -0.8, 0);
+            sphere1.position.set(-1.8, 0.2, 0);
+            sphere2.position.set(1.5, 0.4, 0);
+            sphere3.position.set(0.8, -0.6, 0);
             
             cloud.add(mainSphere, sphere1, sphere2, sphere3);
             cloud.position.set(...position);
@@ -80,7 +80,7 @@
         }
 
         const cloudPositions = [
-            [-6, 3, -8], [5, 2, -7], [2, -3, -9], [-5, -2, -8], [4, 4, -7]
+            [-6, 3, -8], [7, 0, -7], [2, -3, -9], [-5, -2, -8], [4, 4, -7]
         ];
         const clouds = cloudPositions.map(pos => createCloud(pos));
 
@@ -117,3 +117,4 @@
     </script>
 </body>
 </html>
+
